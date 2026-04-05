@@ -31,6 +31,35 @@ SSH:
 git remote add origin git@github.com:CASANMGT/luckey.git
 ```
 
+### Confirm on the web
+
+| What | Link |
+|------|------|
+| **Repository (after it exists)** | [https://github.com/CASANMGT/luckey](https://github.com/CASANMGT/luckey) |
+| **Create new repo** | [https://github.com/new](https://github.com/new) — Owner: **CASANMGT**, Repository name: **`luckey`**, leave empty (no README) |
+
+If push says **Repository not found**, create the repo at the “Create new repo” link first, then push again.
+
+### Consistent push (from this folder)
+
+Use one of these every time — same remote **`origin`**, branch **`main`**:
+
+```bash
+npm run git-push
+```
+
+Or PowerShell:
+
+```powershell
+.\scripts\push.ps1
+```
+
+Or plain Git:
+
+```bash
+git push -u origin main
+```
+
 ## Scripts
 
 | Command        | Description        |
@@ -39,6 +68,7 @@ git remote add origin git@github.com:CASANMGT/luckey.git
 | `npm run dev`  | Dev server         |
 | `npm run build`| Production build   |
 | `npm run preview` | Preview `dist` |
+| `npm run git-push` | `git push -u origin main` → [CASANMGT/luckey](https://github.com/CASANMGT/luckey) |
 
 Open [http://localhost:5173](http://localhost:5173) after `npm run dev`.
 
