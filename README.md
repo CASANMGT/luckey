@@ -15,23 +15,20 @@ git config user.email "your-email@example.com"
 
 (`--global` is optional if you only use one identity on this machine.)
 
-## Your GitHub account
+## GitHub remote (CASANMGT)
 
-Create the remote under **your** GitHub user (not an org you do not own):
-
-1. On GitHub: **New repository** → name e.g. `luckey` → leave empty (no README).
-2. In this folder:
+Target repository: **`CASANMGT/luckey`** — create it under the [CASANMGT](https://github.com/CASANMGT) account or org if it does not exist yet (empty repo, no README).
 
 ```bash
-git remote add origin https://github.com/YOUR_USERNAME/luckey.git
+git remote add origin https://github.com/CASANMGT/luckey.git
 git branch -M main
 git push -u origin main
 ```
 
-Replace `YOUR_USERNAME` with your GitHub login. For SSH:
+SSH:
 
 ```bash
-git remote add origin git@github.com:YOUR_USERNAME/luckey.git
+git remote add origin git@github.com:CASANMGT/luckey.git
 ```
 
 ## Scripts
