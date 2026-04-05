@@ -4,6 +4,17 @@ Smart Lock & kos (boarding house) management — mobile web app (React + Vite + 
 
 This repository is **standalone** (not the Casan dashboard monorepo). Deploy or develop it on its own.
 
+## Git author (this folder only)
+
+This repo was initialized with a placeholder identity. Set **your** name and email before pushing (use the same email as your GitHub account):
+
+```bash
+git config user.name "Your Real Name"
+git config user.email "your-email@example.com"
+```
+
+(`--global` is optional if you only use one identity on this machine.)
+
 ## Your GitHub account
 
 Create the remote under **your** GitHub user (not an org you do not own):
