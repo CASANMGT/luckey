@@ -1,0 +1,65 @@
+@import url("https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Dancing+Script:wght@500;700&display=swap");
+
+.luckey-app {
+  min-height: 100dvh;
+  background: linear-gradient(180deg, #f2fdfb 0%, #d0f5ed 100%);
+  color: #004d4d;
+}
+
+/* Tanda tangan bergaya tulisan tangan (fallback jika tidak bisa coret) */
+.luckey-handwriting-signature {
+  font-family: "Dancing Script", "Caveat", cursive;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+@keyframes dropBounce {
+  0% { transform: translateY(-150px) scale(0.5) rotate(-20deg); opacity: 0; }
+  60% { transform: translateY(15px) scale(1.05) rotate(5deg); opacity: 1; }
+  80% { transform: translateY(-5px) scale(0.98) rotate(-2deg); opacity: 1; }
+  100% { transform: translateY(0) scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-12px); }
+}
+
+@keyframes popSparkle {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1.2) rotate(90deg); opacity: 1; }
+  100% { transform: scale(1) rotate(180deg); opacity: 1; }
+}
+
+@keyframes slideUpFade {
+  0% { transform: translateY(20px); opacity: 0; }
+  100% { transform: translateY(0); opacity: 1; }
+}
+
+@keyframes popSprout {
+  0% { transform: scale(0) rotate(45deg); opacity: 0; }
+  70% { transform: scale(1.1) rotate(-5deg); opacity: 1; }
+  100% { transform: scale(1) rotate(0deg); opacity: 1; }
+}
+
+@keyframes wiggleSprout {
+  0%, 100% { transform: rotate(0deg); }
+  25% { transform: rotate(-6deg); }
+  75% { transform: rotate(6deg); }
+}
+
+.luckey-drop { animation: dropBounce 1s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+.luckey-float { animation: float 3.5s ease-in-out infinite; animation-delay: 1s; }
+.luckey-sprout { animation: popSprout 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; animation-delay: 1.2s; opacity: 0; }
+.luckey-sprout-wiggle { animation: wiggleSprout 4s ease-in-out infinite; animation-delay: 1.8s; }
+.luckey-sparkle-1 { animation: popSparkle 0.8s ease-out forwards, float 2.5s ease-in-out infinite 0.8s; opacity: 0; animation-delay: 0.8s; }
+.luckey-sparkle-2 { animation: popSparkle 0.8s ease-out forwards, float 3s ease-in-out infinite 1.2s; opacity: 0; animation-delay: 1.2s; }
+.luckey-text-up { animation: slideUpFade 0.6s ease-out forwards; opacity: 0; animation-delay: 0.6s; }
+.luckey-subtext-up { animation: slideUpFade 0.6s ease-out forwards; opacity: 0; animation-delay: 0.8s; }
+.luckey-dot-1 { animation: float 1s ease-in-out infinite; animation-delay: 0.1s; }
+.luckey-dot-2 { animation: float 1s ease-in-out infinite; animation-delay: 0.2s; }
+.luckey-dot-3 { animation: float 1s ease-in-out infinite; animation-delay: 0.3s; }
+
+.luckey-shadow {
+  box-shadow: 0 16px 36px rgba(0, 128, 128, 0.2);
+}
