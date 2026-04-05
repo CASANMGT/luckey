@@ -6,11 +6,11 @@ This repository is **standalone** (not the Casan dashboard monorepo). Deploy or 
 
 ## Git author (this folder only)
 
-This repo was initialized with a placeholder identity. Set **your** name and email before pushing (use the same email as your GitHub account):
+Default author for this repo (change `user.name` anytime):
 
 ```bash
-git config user.name "Your Real Name"
-git config user.email "your-email@example.com"
+git config user.name "claux"
+git config user.email "clauxz@gmail.com"
 ```
 
 (`--global` is optional if you only use one identity on this machine.)
