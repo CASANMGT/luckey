@@ -50,9 +50,20 @@ export function refreshPksOpeningDates(p: LegalPksProfile, now = new Date()): Le
   return { ...p, hariPembuka: hari, tanggalPembuka: tanggal, bulanRomawi: bulan, tahunDok: tahun };
 }
 
-/** Nilai awal selaras dengan Beranda/Kamar (Dewi, Kos Melati Indah, kamar 302). NIK & HP penyewa kosong — wajib diisi di halaman PKS. */
+function addCalendarDays(d: Date, days: number): Date {
+  const x = new Date(d.getFullYear(), d.getMonth(), d.getDate());
+  x.setDate(x.getDate() + days);
+  return x;
+}
+
+/**
+ * Demo: masa sewa berakhir **22 hari** dari hari ini agar masuk jendela 30 hari
+ * (hitung mundur + ajukan perpanjangan). Tanggal mulai ~11 bulan sebelum berakhir.
+ */
 export function createDefaultLegalPksProfile(now = new Date()): LegalPksProfile {
   const { hari, tanggal, bulan, tahun } = idPartsPks(now);
+  const end = addCalendarDays(now, 22);
+  const start = addCalendarDays(end, -335);
   return {
     docSeq: "083",
     bulanRomawi: bulan,
@@ -73,8 +84,8 @@ export function createDefaultLegalPksProfile(now = new Date()): LegalPksProfile 
     sewaBulanan: true,
     sewaTahunan: false,
     sewaLainLabel: "",
-    tanggalMulai: "1 Juni 2026",
-    tanggalBerakhir: "31 Mei 2027",
+    tanggalMulai: start.toLocaleDateString("id-ID", ID_DATE),
+    tanggalBerakhir: end.toLocaleDateString("id-ID", ID_DATE),
     sewaRupiahFormatted: "2.500.000",
     periodePembayaran: "bulan",
     tanggalJatuhTempo: "1",

@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import "./luckey.css";
 import type { GuestDuration, Screen } from "./types";
 import { SplashScreen } from "./screens/SplashScreen";
@@ -20,6 +20,7 @@ import { KontrakLegalPksScreen } from "./screens/KontrakLegalPksScreen";
 import { ChangelogScreen } from "./screens/ChangelogScreen";
 import { useSignaturePad } from "./hooks/useSignaturePad";
 import { createDefaultLegalPksProfile, refreshPksOpeningDates } from "./data/legalPksProfile";
+import { getContractRenewalInfo } from "./utils/contractRenewal";
 
 export default function LuckeyApp() {
   const [screen, setScreen] = useState<Screen>("splash");
@@ -29,6 +30,15 @@ export default function LuckeyApp() {
   const [pinVisible, setPinVisible] = useState(false);
   const [unlockActive, setUnlockActive] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState("QRIS");
+  /** Alur bayar tunai: konfirmasi penyewa → tunggu operator → sukses (demo: tombol simulasi). */
+  const [tunaiFlowStatus, setTunaiFlowStatus] = useState<"idle" | "awaiting_operator" | "confirmed">("idle");
+  const [tunaiRequestRef, setTunaiRequestRef] = useState<string | null>(null);
+  /** Alur transfer bank: rekening → unggah bukti → tunggu operator → sukses. */
+  const [transferFlowStatus, setTransferFlowStatus] = useState<
+    "idle" | "bank_details" | "upload_proof" | "awaiting_operator" | "confirmed"
+  >("idle");
+  const [transferBankId, setTransferBankId] = useState<string | null>(null);
+  const [transferRequestRef, setTransferRequestRef] = useState<string | null>(null);
   const [moveReason, setMoveReason] = useState("Pindah Kerja");
   const [guestDuration, setGuestDuration] = useState<GuestDuration>("1H");
   const [guestName, setGuestName] = useState("");
@@ -37,6 +47,8 @@ export default function LuckeyApp() {
   const [signatureMode, setSignatureMode] = useState<"draw" | "typed">("draw");
   const [typedSignatureName, setTypedSignatureName] = useState("");
   const { hasDrawn, canvasRef, drawStart, drawMove, drawEnd, clearSignature } = useSignaturePad();
+  /** Kontainer scroll utama (bukan window) — harus di-reset saat ganti sub-layar Bayar. */
+  const mainScrollRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const first = window.setTimeout(() => setScreen("login"), 3800);
@@ -47,6 +59,34 @@ export default function LuckeyApp() {
     if (screen !== "kontrakDokumenUnsigned") return;
     setTypedSignatureName((prev) => (prev.trim() ? prev : pksProfile.namaPenyewa));
   }, [screen, pksProfile.namaPenyewa]);
+
+  useEffect(() => {
+    if (screen !== "bayar") {
+      setTunaiFlowStatus("idle");
+      setTunaiRequestRef(null);
+      setTransferFlowStatus("idle");
+      setTransferBankId(null);
+      setTransferRequestRef(null);
+    }
+  }, [screen]);
+
+  /** Unggah bukti & langkah transfer/tunai lain memakai konten baru; jangan bawa scroll dari layar sebelumnya. */
+  useEffect(() => {
+    if (screen !== "bayar") return;
+    const inTransferStep = transferFlowStatus !== "idle";
+    const inTunaiStep = tunaiFlowStatus !== "idle";
+    if (!inTransferStep && !inTunaiStep) return;
+    const el = mainScrollRef.current;
+    if (!el) return;
+    requestAnimationFrame(() => {
+      el.scrollTop = 0;
+    });
+  }, [screen, transferFlowStatus, tunaiFlowStatus]);
+
+  const contractRenewal = useMemo(
+    () => getContractRenewalInfo(pksProfile.tanggalBerakhir),
+    [pksProfile.tanggalBerakhir]
+  );
 
   const typedSignatureOk = typedSignatureName.trim().length >= 2;
   const signatureComplete =
@@ -81,9 +121,9 @@ export default function LuckeyApp() {
         {screen === "login" && <LoginScreen onLogin={() => setScreen("beranda")} />}
 
         {screen !== "splash" && screen !== "login" && (
-          <div className="absolute inset-0 overflow-y-auto pb-28">
+          <div ref={mainScrollRef} className="absolute inset-0 overflow-y-auto pb-28">
             {screen === "beranda" && (
-              <BerandaScreen setScreen={setScreen} />
+              <BerandaScreen setScreen={setScreen} contractRenewal={contractRenewal} />
             )}
 
             {screen === "changelog" && <ChangelogScreen onBack={() => setScreen("beranda")} />}
@@ -93,15 +133,59 @@ export default function LuckeyApp() {
             )}
 
             {screen === "bayar" && (
-              <BayarScreen paymentMethod={paymentMethod} setPaymentMethod={setPaymentMethod} setScreen={setScreen} />
+              <BayarScreen
+                paymentMethod={paymentMethod}
+                setPaymentMethod={setPaymentMethod}
+                setScreen={setScreen}
+                tunaiFlowStatus={tunaiFlowStatus}
+                tunaiRequestRef={tunaiRequestRef}
+                onStartTunaiAwaiting={() => {
+                  setTunaiRequestRef(`TX-${Math.floor(1000 + Math.random() * 9000)}-CON`);
+                  setTunaiFlowStatus("awaiting_operator");
+                }}
+                onSimulateOperatorConfirm={() => setTunaiFlowStatus("confirmed")}
+                onResetTunaiFlow={() => {
+                  setTunaiFlowStatus("idle");
+                  setTunaiRequestRef(null);
+                }}
+                transferFlowStatus={transferFlowStatus}
+                transferBankId={transferBankId}
+                transferRequestRef={transferRequestRef}
+                onStartTransferFlow={() => {
+                  setTransferFlowStatus("bank_details");
+                  setTransferBankId(null);
+                  setTransferRequestRef(null);
+                }}
+                onSelectTransferBank={setTransferBankId}
+                onTransferProceedToUpload={() => setTransferFlowStatus("upload_proof")}
+                onTransferBackToBankDetails={() => setTransferFlowStatus("bank_details")}
+                onTransferSubmitProof={() => {
+                  setTransferRequestRef(`TX-${Math.floor(1000 + Math.random() * 9000)}-TRF`);
+                  setTransferFlowStatus("awaiting_operator");
+                }}
+                onSimulateTransferConfirm={() => setTransferFlowStatus("confirmed")}
+                onResetTransferFlow={() => {
+                  setTransferFlowStatus("idle");
+                  setTransferBankId(null);
+                  setTransferRequestRef(null);
+                }}
+              />
             )}
 
             {screen === "kwitansi" && <KwitansiScreen paymentMethod={paymentMethod} />}
 
-            {screen === "kamar" && <KamarScreen setScreen={setScreen} />}
+            {screen === "kamar" && (
+              <KamarScreen
+                setScreen={setScreen}
+                contractRenewal={contractRenewal}
+                tanggalPembuka={pksProfile.tanggalPembuka}
+              />
+            )}
 
             {screen === "kontrakDokumenSigned" && (
               <KontrakDokumenSignedScreen
+                contractRenewal={contractRenewal}
+                tanggalPembuka={pksProfile.tanggalPembuka}
                 onBack={() => setScreen("kamar")}
                 onAjukanPerpanjangan={() => {
                   setLegalPksViewed(false);

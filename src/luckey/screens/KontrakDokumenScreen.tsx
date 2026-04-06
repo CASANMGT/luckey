@@ -1,5 +1,6 @@
 import { cardClass } from "../constants";
 import type { PointerEvent, RefObject } from "react";
+import type { ContractRenewalInfo } from "../utils/contractRenewal";
 
 type KontrakDokumenUnsignedScreenProps = {
   onBack: () => void;
@@ -212,14 +213,61 @@ export function KontrakDokumenUnsignedScreen({
 }
 
 export function KontrakDokumenSignedScreen({
+  contractRenewal,
+  tanggalPembuka,
   onBack,
   onAjukanPerpanjangan,
   onViewLegalPks,
 }: {
+  contractRenewal: ContractRenewalInfo | null;
+  tanggalPembuka: string;
   onBack: () => void;
   onAjukanPerpanjangan: () => void;
   onViewLegalPks: () => void;
 }) {
+  const perpanjangBody = (() => {
+    if (!contractRenewal) {
+      return (
+        <p className="text-sm text-gray-500 leading-relaxed mb-5">
+          Perpanjang sewa lewat dokumen ini jika masa kontrak Anda hampir berakhir.
+        </p>
+      );
+    }
+    if (contractRenewal.isExpired) {
+      return (
+        <>
+          <p className="text-sm text-gray-600 leading-relaxed mb-2">
+            Kontrak berakhir pada <strong className="text-[#004D4D]">{contractRenewal.endDateLabel}</strong>.
+          </p>
+          <p className="text-sm text-red-700 font-semibold leading-relaxed mb-5">
+            Tanggal berakhir sudah lewat. Ajukan perpanjangan untuk melanjutkan sewa.
+          </p>
+        </>
+      );
+    }
+    if (contractRenewal.isInCountdownWindow) {
+      return (
+        <>
+          <p className="text-sm text-gray-600 leading-relaxed mb-3">
+            Kontrak berakhir pada <strong className="text-[#004D4D]">{contractRenewal.endDateLabel}</strong>.
+          </p>
+          <div className="rounded-xl border border-[#FDE047]/80 bg-gradient-to-r from-[#FFFBEB] to-[#FEF9C3] px-4 py-3 mb-5">
+            <p className="text-[10px] font-extrabold uppercase tracking-widest text-[#B45309]">Hitung mundur</p>
+            <p className="text-2xl font-extrabold text-[#92400E] mt-0.5">Sisa {contractRenewal.daysRemaining} hari</p>
+            <p className="text-[11px] text-[#92400E]/85 font-medium mt-1">
+              Perpanjang sekarang agar akses kunci digital tidak terputus.
+            </p>
+          </div>
+        </>
+      );
+    }
+    return (
+      <p className="text-sm text-gray-500 leading-relaxed mb-5">
+        Kontrak berakhir pada <strong className="text-[#004D4D]">{contractRenewal.endDateLabel}</strong>. Masih lebih dari 30 hari; Anda dapat mengajukan perpanjangan kapan saja.
+      </p>
+    );
+  })();
+
   return (
     <div className="p-6 space-y-4">
       <header className="w-full flex items-center justify-between">
@@ -240,7 +288,9 @@ export function KontrakDokumenSignedScreen({
           <span className="text-[#008080]">⚙</span>
         </div>
         <h3 className="text-center font-extrabold text-[#004D4D] text-lg tracking-wide mb-4">PERJANJIAN SEWA MENYEWA</h3>
-        <p className="text-sm text-gray-600 mb-4 leading-relaxed">Bahwa pada hari ini, <strong className="text-[#004D4D]">24 Mei 2026</strong>, yang bertanda tangan di bawah ini:</p>
+        <p className="text-sm text-gray-600 mb-4 leading-relaxed">
+          Bahwa pada hari ini, <strong className="text-[#004D4D]">{tanggalPembuka}</strong>, yang bertanda tangan di bawah ini:
+        </p>
         <div className="border-l-2 border-[#90EE90] pl-3 mb-4 space-y-2">
           <p className="text-sm text-gray-600"><em className="text-[#008080]">Pihak Pertama (Pemilik):</em> PT. Luckey Estate Indonesia</p>
           <p className="text-sm text-gray-600"><em className="text-[#008080]">Pihak Kedua (Penyewa):</em> Ibu Dewi</p>
@@ -262,13 +312,13 @@ export function KontrakDokumenSignedScreen({
         <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center text-[#90EE90]">✓</div>
         <div>
           <h4 className="font-extrabold text-[#004D4D] text-base">Kontrak Ditandatangani</h4>
-          <p className="text-[10px] font-extrabold text-[#008080] mt-0.5 opacity-80">DIVERIFIKASI PADA 24 MEI 2026</p>
+          <p className="text-[10px] font-extrabold text-[#008080] mt-0.5 opacity-80">DIVERIFIKASI PADA {tanggalPembuka.toUpperCase()}</p>
         </div>
       </div>
 
       <div className={cardClass}>
         <h4 className="font-extrabold text-[#004D4D] text-lg mb-2">Perpanjang Sewa</h4>
-        <p className="text-sm text-gray-500 leading-relaxed mb-5">Masa sewa Anda akan berakhir dalam <strong className="text-[#004D4D]">15 hari</strong>. Perpanjang sekarang untuk memastikan akses kunci digital tidak terputus.</p>
+        {perpanjangBody}
         <button onClick={onAjukanPerpanjangan} className="w-full bg-[#004D4D] text-[#90EE90] py-3.5 rounded-xl font-bold text-sm">
           Ajukan Perpanjangan
         </button>
