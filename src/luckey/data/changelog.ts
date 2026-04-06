@@ -3,7 +3,7 @@
  * Untuk dokumentasi repo, sinkronkan ringkas ke .github/luckey/CHANGELOG.md.
  */
 
-export const LUCKEY_APP_VERSION = "0.5.0";
+export const LUCKEY_APP_VERSION = "0.6.0";
 
 export type ChangelogKind = "added" | "changed" | "fixed";
 
@@ -26,6 +26,23 @@ export function changelogKindLabel(kind: ChangelogKind): string {
 
 /** Urutan: terbaru di atas. */
 export const LUCKEY_CHANGELOG: LuckeyChangelogRelease[] = [
+  {
+    version: "0.6.0",
+    date: "2026-04-06",
+    summary: "Alur bayar transfer & tunai, kwitansi digital, dan perpanjangan kontrak.",
+    sections: {
+      added: [
+        "Bayar Transfer Bank: pilih bank, salin rekening, unggah bukti, tunggu verifikasi operator, lalu layar sukses.",
+        "Bayar tunai: minta konfirmasi operator, lalu layar sukses.",
+        "Layar konfirmasi pembayaran bergaya kwitansi digital (teal) dengan total, detail transaksi, unduh PDF, dan kirim ringkasan ke WhatsApp atau email penyewa (ikon resmi).",
+        "Data bank transfer (`transferBanks`) dan utilitas sisa masa kontrak (`contractRenewal`) untuk countdown perpanjangan.",
+      ],
+      changed: [
+        "Urutan metode bayar: QRIS, Transfer Bank, Bayar tunai; scroll konten utama di-reset saat masuk sub-alur transfer/tunai.",
+        "Kamar: kartu kontrak menampilkan tanggal berakhir, countdown ≤30 hari, dan ajukan perpanjangan saat mendekati habis.",
+      ],
+    },
+  },
   {
     version: "0.5.0",
     date: "2026-04-05",

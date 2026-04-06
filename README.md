@@ -33,7 +33,7 @@
 
 The app is **data-mock driven** today (demo tenant “Dewi”, Kos Melati Indah, Kamar 302). It is structured so you can later swap mocks for **REST/GraphQL**, **auth**, and **real smart-lock / payment** integrations without rewriting the screen layer.
 
-**Current version (in-app):** `0.5.0` — see [`src/luckey/data/changelog.ts`](src/luckey/data/changelog.ts).
+**Current version (in-app):** `0.6.0` — see [`src/luckey/data/changelog.ts`](src/luckey/data/changelog.ts) and [`.github/luckey/CHANGELOG.md`](.github/luckey/CHANGELOG.md).
 
 ---
 
@@ -58,8 +58,8 @@ The app is **data-mock driven** today (demo tenant “Dewi”, Kos Melati Indah,
 
 - **Beranda** — Greeting, property chip, rent stats, upcoming/paid bills, activity feed.
 - **Pembaruan** — Tap header (avatar + **Luckey**) to open a **modal changelog** (version + release notes).
-- **Bayar** — Payment method selection (QRIS, bank, cash), amounts, pending state UI.
-- **Kwitansi** — Receipt-style view tied to selected payment method.
+- **Bayar** — Methods **QRIS**, **Transfer Bank**, **Bayar tunai**; transfer path with bank picker, copyable account details, proof upload, and operator verification (demo); cash path with operator confirmation (demo); main scroll resets on sub-steps.
+- **Kwitansi** — Receipt summary; after confirmation, **digital receipt** layout with PDF CTA and **share to your WhatsApp / email** (prefilled message; tenant contact placeholders in `constants.ts`).
 
 ### Smart access
 
@@ -69,7 +69,7 @@ The app is **data-mock driven** today (demo tenant “Dewi”, Kos Melati Indah,
 
 ### Room & contract
 
-- **Kamar** — Active contract card, “Ajukan Pindahan”, history; **Lihat Dokumen** opens **signed** contract view.
+- **Kamar** — Active contract card with **end date**, **countdown** when ≤30 days remain, **Ajukan Perpanjangan** when relevant; “Ajukan Pindahan”, history; **Lihat Dokumen** opens **signed** contract view.
 - **Kontrak ditandatangani** — Summary, download CTA (UI), **Lihat Legal PKS**, **Ajukan Perpanjangan** → unsigned flow.
 - **Kontrak unsigned (perpanjangan)** — Legal PKS gate, **dual signature** (draw on canvas **or** typed **handwriting** font), T&C checkbox, submit.
 
@@ -133,11 +133,12 @@ luckey/
         ├── LuckeyApp.tsx      # Screen router & global state
         ├── luckey.css         # Animations, app chrome
         ├── types.ts           # Screen union, GuestDuration
-        ├── constants.ts       # cardClass, payment/move/guest option lists
+        ├── constants.ts       # cardClass, payment/move/guest lists, tenant contact for receipt share
         ├── components/        # BottomNav, ChangelogModal, ChangelogBody
         ├── screens/           # Feature views (Splash, Login, PrimaryScreens, Kontrak*, Legal PKS, Changelog)
         ├── hooks/             # useSignaturePad
-        └── data/              # changelog.ts, legalPksProfile.ts, legalPksKontrak.ts
+        ├── utils/             # contractRenewal (countdown / renewal window)
+        └── data/              # changelog.ts, legalPksProfile.ts, legalPksKontrak.ts, transferBanks.ts
 ```
 
 ---
@@ -170,8 +171,9 @@ Luckey intentionally uses a **fixed palette** (see Tailwind arbitrary values in 
 ## Changelog & versioning
 
 1. **Source of truth for the UI** — [`src/luckey/data/changelog.ts`](src/luckey/data/changelog.ts): bump `LUCKEY_APP_VERSION`, prepend a release to `LUCKEY_CHANGELOG`.
-2. **Markdown mirror** — [`.github/luckey/CHANGELOG.md`](.github/luckey/CHANGELOG.md) for GitHub readers.
-3. **In-app** — Modal from Beranda header + optional full **Changelog** screen.
+2. **Markdown mirror** — [`.github/luckey/CHANGELOG.md`](.github/luckey/CHANGELOG.md) for GitHub readers (keep in sync with `changelog.ts` on each release).
+3. **Repo pointer** — Root [`CHANGELOG.md`](CHANGELOG.md) links both locations.
+4. **In-app** — Modal from Beranda header + optional full **Changelog** screen.
 
 ---
 
@@ -241,7 +243,7 @@ git remote set-url origin git@github.com:CASANMGT/luckey.git
 1. Branch from `main`, open a **PR** (required if you add stricter branch rules later).
 2. Keep **Luckey** changes inside `src/luckey/`, `public/luckey/`, and `.github/luckey/` when possible.
 3. Run **`npm run build`** before pushing.
-4. Update **`changelog.ts`** (+ `.github/luckey/CHANGELOG.md` when you cut a user-facing release).
+4. Update **`changelog.ts`**, mirror **`.github/luckey/CHANGELOG.md`**, and bump **`package.json`** `version` when you cut a user-facing release.
 
 ---
 
@@ -249,6 +251,7 @@ git remote set-url origin git@github.com:CASANMGT/luckey.git
 
 | Doc | Description |
 |-----|-------------|
+| [`CHANGELOG.md`](CHANGELOG.md) | Points to in-app changelog module and GitHub mirror |
 | [`.github/luckey/README.md`](.github/luckey/README.md) | Maintainer notes (historically mirrored from monorepo context) |
 | [`.github/luckey/CHANGELOG.md`](.github/luckey/CHANGELOG.md) | Human-readable release log |
 

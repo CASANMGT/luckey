@@ -6,6 +6,20 @@ User-facing history for the **Luckey** module. The canonical source for the in-a
 
 Keep this file aligned with that module when you cut a Luckey release.
 
+## 0.6.0 — 2026-04-06
+
+### Added
+
+- **Transfer bank** flow: choose bank, copy account details, upload proof, await operator verification, success receipt screen.
+- **Cash (tunai)** flow: await operator verification, then success receipt screen.
+- **Digital receipt** confirmation UI (teal styling): totals, line items, PDF CTA, and **share summary** to tenant **WhatsApp** or **email** (brand icons; contact placeholders in `constants.ts`).
+- `src/luckey/data/transferBanks.ts` and `src/luckey/utils/contractRenewal.ts`.
+
+### Changed
+
+- Payment method order: **QRIS**, **Transfer Bank**, **Bayar tunai**; main scroll resets when entering transfer/cash sub-flows.
+- **Kamar**: contract end date, **≤30 day** countdown, and renewal CTA when approaching expiry.
+
 ## 0.5.0 — 2026-04-05
 
 ### Added
